@@ -1,5 +1,6 @@
 package com.m9d2.deploy;
 
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -46,8 +47,13 @@ public class DeployController {
 
     private Process exec(String sh) {
         try {
-            Runtime.getRuntime().exec("chmod a+x " + sh);
-            return Runtime.getRuntime().exec(sh);
+
+            int index = sh.lastIndexOf("/");
+            String path = sh.substring(0, index);
+            String shell = sh.substring(index + 1);
+            Runtime runtime = Runtime.getRuntime();
+            runtime.exec("chmod a+x " + sh);
+            return runtime.exec("sh " + shell, null, new File(path));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -57,4 +63,5 @@ public class DeployController {
     private String println(String line) {
         return line;
     }
+
 }
